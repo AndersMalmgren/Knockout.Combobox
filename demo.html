@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Combobox demo</title>
+    <script src="http://cloud.github.com/downloads/SteveSanderson/knockout/knockout-2.1.0.js" type="text/javascript"></script>    
+    <script src="src\knockout.combobox.js" type="text/javascript"></script>
+
+</head>
+<body>
+    <div data-bind="combobox: { dataSource: getData, selected: selected }"></div>
+    <div>Selected: <span data-bind="text: selectedName"></span></div>
+
+    <script src="demo.js" type="text/javascript"></script>
+</body>
+</html>
