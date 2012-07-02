@@ -10,6 +10,14 @@
     <div data-bind="combobox: { dataSource: getData, selected: selected }"></div>
     <div>Selected: <span data-bind="text: selectedName"></span></div>
 
+    <h3>Custom item template</h3>
+    <div data-bind="combobox: { dataSource: getData, selected: selected, rowTemplate: 'row-template' }"></div>
+    <div>Selected: <span data-bind="text: selectedName"></span></div>
+
+    <script id="row-template" type="text/html">
+        <span data-bind="text: name"></span><span>Custom template stuff</span>
+    </script>
+
     <script src="demo.js" type="text/javascript"></script>
 </body>
 </html>
