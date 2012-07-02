@@ -28,7 +28,7 @@
 
         this.paging = new ko.bindingHandlers.combobox.PagingViewModel(options, this.getData.bind(this), this.dropdownItems);
 
-        this.rowTemplate = options.rowTemplate;
+        this.rowTemplate = options.rowTemplate.replace("$$valueMember&&", options.valueMember);
     };
 
     ko.bindingHandlers.combobox.ViewModel.prototype = {
@@ -164,7 +164,7 @@
         </div>\
     </div>';
 
-    var rowTemplate = '<span data-bind="text: name"></span>';
+    var rowTemplate = '<span data-bind="text: $$valueMember&&"></span>';
 
     defaultOptions = {
         rowTemplate: rowTemplate,
