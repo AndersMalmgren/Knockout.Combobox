@@ -41,6 +41,7 @@
                 return;
             }
 
+            this.paging.reset();
             clearTimeout(this.searchTimeout);
             this.searchTimeout = setTimeout(this.getData.bind(this), 200);
         },
@@ -110,16 +111,25 @@
     ko.bindingHandlers.combobox.PagingViewModel.prototype = {
         update: function (count) {
             var current = this.currentPage();
-            var totalPageCount = Math.floor(count / this.options.pageSize) + 1;
-
-            var maxLinks = Math.min(this.options.pagingLinks, totalPageCount)
             var pages = [];
-            for (var i = 0; i < maxLinks; i++) {
-                pages.push(this.createPage(i + current));
+            var totalPageCount = Math.ceil(count / this.options.pageSize);
+            var maxLinks = Math.min(this.options.pagingLinks, totalPageCount);
+
+            var min = current - (maxLinks / 2);
+            var max = current + (maxLinks / 2);
+
+            if (min < 0) {
+                max += Math.abs(min);
+                min = 0;
             }
 
-            if (totalPageCount > this.options.pageSize) {
-                pages.push(this.createPage(totalPageCount - 1));
+            if (max > totalPageCount) {
+                min = min - (max - totalPageCount);
+                max = totalPageCount;
+            }
+
+            for (var i = min; i < max; i++) {
+                pages.push(this.createPage(i));
             }
 
             this.pages(pages);
@@ -138,6 +148,9 @@
             this.currentPage(page.index);
             this.callback(page.index);
             this.update(this.totalCount());
+        },
+        reset: function () {
+            this.currentPage(0);
         }
     };
 
