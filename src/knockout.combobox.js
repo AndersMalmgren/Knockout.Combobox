@@ -21,8 +21,17 @@
     ko.bindingHandlers.clickedIn = {
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var target = valueAccessor();
+            var clickedIn = false;
             ko.utils.registerEventHandler(document.body, "click", function (e) {
-                target(e.target == element);
+                if (!clickedIn) {
+                    target(e.target == element);
+                }
+
+                clickedIn = false;
+            });
+
+            ko.utils.registerEventHandler(element.parentElement, "click", function (e) {
+                clickedIn = true;
             });
         }
     };
@@ -196,16 +205,18 @@
     };
 
     //Built in templates
-    var comboboxTemplate = '<input data-bind="value: searchText, valueUpdate: \'afterkeydown\', keys: keyPress"></input>\
-    <button data-bind="click: forceShow">Arrow down</button>\
-    <div data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
-        <!-- ko foreach: dropdownItems -->\
-            <div data-bind="click: $parent.selected.bind($parent), flexibleTemplate: { template: $parent.rowTemplate, data: $data }"></div>\
-        <!-- /ko -->\
-        <div>\
-            Showing <span data-bind="text: paging.currentFloor"></span>-<span data-bind="text: paging.currentRoof"></span> of <span data-bind="text: paging.totalCount"></span>\
-            <div data-bind="visible: paging.show, foreach: paging.pages">\
-                <button data-bind="click: pageSelected, text: name, disable: isCurrent"></button>\
+    var comboboxTemplate = '<div>\
+        <input data-bind="value: searchText, valueUpdate: \'afterkeydown\', keys: keyPress"></input>\
+        <button data-bind="click: forceShow">Arrow down</button>\
+        <div data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
+            <!-- ko foreach: dropdownItems -->\
+                <div data-bind="click: $parent.selected.bind($parent), flexibleTemplate: { template: $parent.rowTemplate, data: $data }"></div>\
+            <!-- /ko -->\
+            <div>\
+                Showing <span data-bind="text: paging.currentFloor"></span>-<span data-bind="text: paging.currentRoof"></span> of <span data-bind="text: paging.totalCount"></span>\
+                <div data-bind="visible: paging.show, foreach: paging.pages">\
+                    <button data-bind="click: pageSelected, text: name, disable: isCurrent"></button>\
+                </div>\
             </div>\
         </div>\
     </div>';
