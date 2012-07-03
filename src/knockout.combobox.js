@@ -18,9 +18,29 @@
         }
     };
 
+    ko.bindingHandlers.clickedIn = {
+        init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            var target = valueAccessor();
+            ko.utils.registerEventHandler(document.body, "click", function (e) {
+                target(e.target == element);
+            });
+        }
+    };
+
+    ko.bindingHandlers.keys = {
+        init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            var target = valueAccessor();
+            ko.utils.registerEventHandler(element, "keyup", function (e) {
+                target(e.keyCode);
+            });
+        }
+    };
+
     ko.bindingHandlers.combobox.ViewModel = function (options) {
         this.options = options;
-        this.searchText = ko.observable();
+        this.keyPress = ko.observable();
+        this.keyPress.subscribe(this.onKeyPress, this);
+        this.searchText = ko.observable("");
         this.searchText.subscribe(this.onSearch, this);
         this.options.selected.subscribe(this.setSelectedText, this);
         if (this.options.selected() != null) {
@@ -36,7 +56,14 @@
     };
 
     ko.bindingHandlers.combobox.ViewModel.prototype = {
-        onSearch: function (value) {
+        onKeyPress: function (keyCode) {
+            switch (keyCode) {
+                case 27:
+                    this.hideDropdown();
+                    break;
+            }
+        },
+        onSearch: function (value, a) {
             if (this.explicitSet) {
                 return;
             }
@@ -169,9 +196,9 @@
     };
 
     //Built in templates
-    var comboboxTemplate = '<input data-bind="value: searchText, valueUpdate: \'afterkeydown\'"></input>\
+    var comboboxTemplate = '<input data-bind="value: searchText, valueUpdate: \'afterkeydown\', keys: keyPress"></input>\
     <button data-bind="click: forceShow">Arrow down</button>\
-    <div data-bind="visible: dropdownVisible">\
+    <div data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
         <!-- ko foreach: dropdownItems -->\
             <div data-bind="click: $parent.selected.bind($parent), flexibleTemplate: { template: $parent.rowTemplate, data: $data }"></div>\
         <!-- /ko -->\
