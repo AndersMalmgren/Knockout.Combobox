@@ -11,9 +11,9 @@
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var options = ko.utils.unwrapObservable(valueAccessor());
             if (document.getElementById(options.template) != null) {
-                ko.renderTemplate(options.template, bindingContext.createChildContext(options.data), null, element, null);
+                ko.renderTemplate(options.template, bindingContext.createChildContext(options.data), null, element,  "replaceChildren");
             } else {
-                ko.renderTemplate(options.template, bindingContext.createChildContext(options.data), { templateEngine: ko.stringTemplateEngine }, element, null);
+                ko.renderTemplate(options.template, bindingContext.createChildContext(options.data), { templateEngine: ko.stringTemplateEngine }, element, "replaceChildren");
             }
         }
     };
@@ -179,8 +179,7 @@
                 index: index,
                 isCurrent: ko.computed(function () {
                     return index == this.currentPage()
-                }, this),
-                pageSelected: this.pageSelected.bind(this)
+                }, this)
             };
         },
         pageSelected: function (page) {
@@ -215,10 +214,10 @@
             <!-- ko foreach: dropdownItems -->\
                 <div data-bind="click: $parent.selected.bind($parent), flexibleTemplate: { template: $parent.rowTemplate, data: $data }"></div>\
             <!-- /ko -->\
-            <div>\
-                Showing <span data-bind="text: paging.currentFloor"></span>-<span data-bind="text: paging.currentRoof"></span> of <span data-bind="text: paging.totalCount"></span>\
-                <div data-bind="visible: paging.show, foreach: paging.pages">\
-                    <button data-bind="click: pageSelected, text: name, disable: isCurrent"></button>\
+            <div data-bind="with: paging">\
+                Showing <span data-bind="text: currentFloor"></span>-<span data-bind="text: currentRoof"></span> of <span data-bind="text: totalCount"></span>\
+                <div data-bind="visible: show, foreach: pages">\
+                    <button data-bind="click: $parent.pageSelected.bind($parent), text: name, disable: isCurrent"></button>\
                 </div>\
             </div>\
         </div>\
