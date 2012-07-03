@@ -70,6 +70,9 @@
                 case 27:
                     this.hideDropdown();
                     break;
+                case 13:
+                    this.forceShow();
+                    break;
             }
         },
         onSearch: function (value, a) {
@@ -205,8 +208,8 @@
     };
 
     //Built in templates
-    var comboboxTemplate = '<div>\
-        <input data-bind="value: searchText, valueUpdate: \'afterkeydown\', keys: keyPress"></input>\
+    var comboboxTemplate = '<div data-bind="keys: keyPress">\
+        <input data-bind="value: searchText, valueUpdate: \'afterkeydown\'"></input>\
         <button data-bind="click: forceShow">Arrow down</button>\
         <div data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
             <!-- ko foreach: dropdownItems -->\
