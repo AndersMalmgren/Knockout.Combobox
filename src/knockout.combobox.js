@@ -22,6 +22,10 @@
         this.options = options;
         this.searchText = ko.observable();
         this.searchText.subscribe(this.onSearch, this);
+        this.options.selected.subscribe(this.setSelectedText, this);
+        if (this.options.selected() != null) {
+            this.setSelectedText(this.options.selected());
+        }
 
         this.dropdownVisible = ko.observable(false);
         this.dropdownItems = ko.observableArray();
@@ -55,6 +59,8 @@
         selected: function (item) {
             this.options.selected(item);
             this.hideDropdown();
+        },
+        setSelectedText: function (item) {
             this.explicitSet = true;
             this.searchText(ko.utils.unwrapObservable(item[this.options.valueMember]));
             this.explicitSet = false;
