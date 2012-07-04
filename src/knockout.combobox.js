@@ -11,10 +11,12 @@
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var options = ko.utils.unwrapObservable(valueAccessor());
             if (document.getElementById(options.template) != null) {
-                ko.renderTemplate(options.template, bindingContext.createChildContext(options.data), null, element,  "replaceChildren");
+                ko.renderTemplate(options.template, bindingContext.createChildContext(options.data), null, element, "replaceChildren");
             } else {
                 ko.renderTemplate(options.template, bindingContext.createChildContext(options.data), { templateEngine: ko.stringTemplateEngine }, element, "replaceChildren");
             }
+
+            return { controlsDescendantBindings: true };
         }
     };
 
@@ -40,7 +42,7 @@
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var target = valueAccessor();
             ko.utils.registerEventHandler(element, "keyup", function (e) {
-                target(e.keyCode);
+                target({ keyCode: e.keyCode });
             });
         }
     };
@@ -60,18 +62,29 @@
         this.dropdownItems = ko.observableArray();
 
         this.paging = new ko.bindingHandlers.combobox.PagingViewModel(options, this.getData.bind(this), this.dropdownItems);
+        this.currentActiveIndex = 0;
 
         this.rowTemplate = options.rowTemplate.replace("$$valueMember&&", options.valueMember);
     };
 
     ko.bindingHandlers.combobox.ViewModel.prototype = {
-        onKeyPress: function (keyCode) {
-            switch (keyCode) {
+        onKeyPress: function (e) {
+            switch (e.keyCode) {
                 case 27:
                     this.hideDropdown();
                     break;
                 case 13:
-                    this.forceShow();
+                    if (this.dropdownVisible()) {
+                        this.selected(this.getCurrentActiveItem());
+                    } else {
+                        this.forceShow();
+                    }
+                    break;
+                case 38:
+                    this.navigate(-1);
+                    break;
+                case 40:
+                    this.navigate(1);
                     break;
             }
         },
@@ -80,7 +93,7 @@
                 return;
             }
 
-            this.paging.reset();
+            this.resetDropdown();
             clearTimeout(this.searchTimeout);
             this.searchTimeout = setTimeout(this.getData.bind(this), 200);
         },
@@ -92,12 +105,21 @@
             }
         },
         getDataCallback: function (result) {
-            this.dropdownItems(result.data);
+            var arr = [];
+            ko.utils.arrayForEach(result.data, function (item) {
+                arr.push(new ko.bindingHandlers.combobox.ItemViewModel(item));
+            } .bind(this));
+            this.dropdownItems(arr);
+            this.navigate(0);
             this.paging.totalCount(result.total);
             this.dropdownVisible(result.data.length > 0);
         },
+        resetDropdown: function () {
+            this.currentActiveIndex = 0;
+            this.paging.reset();
+        },
         selected: function (item) {
-            this.options.selected(item);
+            this.options.selected(item.item);
             this.hideDropdown();
         },
         setSelectedText: function (item) {
@@ -117,7 +139,33 @@
             } else {
                 this.showDropdown();
             }
+        },
+        navigate: function (direction) {
+            if (this.dropdownVisible() || this.currentActiveIndex == 0) {
+                this.inactive(this.getCurrentActiveItem());
+                this.currentActiveIndex += direction;
+                this.currentActiveIndex = this.currentActiveIndex < 0 ? 0 : this.currentActiveIndex;
+                this.currentActiveIndex = this.currentActiveIndex >= this.paging.itemCount() ? this.paging.itemCount() - 1 : this.currentActiveIndex;
+                this.active(this.getCurrentActiveItem());
+            }
+        },
+        getCurrentActiveItem: function () {
+            return this.dropdownItems()[this.currentActiveIndex];
+        },
+        active: function (item) {
+            item.isActive(true);
+        },
+        inactive: function (item) {
+            item.isActive(false);
         }
+    };
+
+    ko.bindingHandlers.combobox.ItemViewModel = function (item) {
+        this.item = item;
+        this.isActive = ko.observable();
+        this.className = ko.computed(function () {
+            return this.isActive() ? "active" : "";
+        }, this)
     };
 
     ko.bindingHandlers.combobox.PagingViewModel = function (options, callback, dropdownItems) {
@@ -212,7 +260,7 @@
         <button data-bind="click: forceShow">Arrow down</button>\
         <div data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
             <!-- ko foreach: dropdownItems -->\
-                <div data-bind="click: $parent.selected.bind($parent), flexibleTemplate: { template: $parent.rowTemplate, data: $data }"></div>\
+                <div data-bind="click: $parent.selected.bind($parent), event: { mouseover: $parent.active.bind($parent), mouseout: $parent.inactive.bind($parent) }, attr: { \'class\': className },  flexibleTemplate: { template: $parent.rowTemplate, data: $data.item }"></div>\
             <!-- /ko -->\
             <div data-bind="with: paging">\
                 Showing <span data-bind="text: currentFloor"></span>-<span data-bind="text: currentRoof"></span> of <span data-bind="text: totalCount"></span>\

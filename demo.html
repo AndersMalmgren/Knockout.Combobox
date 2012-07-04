@@ -4,7 +4,12 @@
     <title>Combobox demo</title>
     <script src="http://cloud.github.com/downloads/SteveSanderson/knockout/knockout-2.1.0.js" type="text/javascript"></script>    
     <script src="src\knockout.combobox.js" type="text/javascript"></script>
-
+    <style type="text/css">
+        .active 
+        {
+            background: blue;
+        }
+</style>
 </head>
 <body>
     <div data-bind="combobox: { dataSource: getData, selected: selected }"></div>
