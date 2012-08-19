@@ -3,18 +3,16 @@
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var options = ko.utils.extend(defaultOptions, ko.utils.unwrapObservable(valueAccessor()));
             var model = new ko.bindingHandlers.combobox.ViewModel(options);
-            ko.renderTemplate(comboboxTemplate, bindingContext.createChildContext(model), { templateEngine: ko.stringTemplateEngine }, element, "replaceNode");
+            ko.renderTemplate(comboboxTemplate, bindingContext.createChildContext(model), { templateEngine: stringTemplateEngine }, element, "replaceNode");
         }
     };
 
     ko.bindingHandlers.flexibleTemplate = {
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var options = ko.utils.unwrapObservable(valueAccessor());
-            if (document.getElementById(options.template) != null) {
-                ko.renderTemplate(options.template, bindingContext.createChildContext(options.data), null, element, "replaceChildren");
-            } else {
-                ko.renderTemplate(options.template, bindingContext.createChildContext(options.data), { templateEngine: ko.stringTemplateEngine }, element, "replaceChildren");
-            }
+            var engine = document.getElementById(options.template) != null ? null : { templateEngine: stringTemplateEngine };
+
+            ko.renderTemplate(options.template, bindingContext.createChildContext(options.data), engine, element, "replaceChildren");
 
             return { controlsDescendantBindings: true };
         }
@@ -241,17 +239,17 @@
     };
 
     //string template source engine
-    ko.stringTemplateSource = function (template) {
+    var stringTemplateSource = function (template) {
         this.template = template;
     };
 
-    ko.stringTemplateSource.prototype.text = function () {
+    stringTemplateSource.prototype.text = function () {
         return this.template;
     };
 
-    ko.stringTemplateEngine = new ko.nativeTemplateEngine();
-    ko.stringTemplateEngine.makeTemplateSource = function (template) {
-        return new ko.stringTemplateSource(template);
+    var stringTemplateEngine = new ko.nativeTemplateEngine();
+    stringTemplateEngine.makeTemplateSource = function (template) {
+        return new stringTemplateSource(template);
     };
 
     //Built in templates
