@@ -161,9 +161,6 @@
     ko.bindingHandlers.combobox.ItemViewModel = function (item) {
         this.item = item;
         this.isActive = ko.observable();
-        this.className = ko.computed(function () {
-            return this.isActive() ? "active" : "";
-        }, this)
     };
 
     ko.bindingHandlers.combobox.PagingViewModel = function (options, callback, dropdownItems) {
@@ -258,7 +255,7 @@
         <button data-bind="click: forceShow">Arrow down</button>\
         <div data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
             <!-- ko foreach: dropdownItems -->\
-                <div data-bind="click: $parent.selected.bind($parent), event: { mouseover: $parent.active.bind($parent), mouseout: $parent.inactive.bind($parent) }, attr: { \'class\': className },  flexibleTemplate: { template: $parent.rowTemplate, data: $data.item }"></div>\
+                <div data-bind="click: $parent.selected.bind($parent), event: { mouseover: $parent.active.bind($parent), mouseout: $parent.inactive.bind($parent) }, css: { active: isActive },  flexibleTemplate: { template: $parent.rowTemplate, data: $data.item }"></div>\
             <!-- /ko -->\
             <div data-bind="with: paging">\
                 Showing <span data-bind="text: currentFloor"></span>-<span data-bind="text: currentRoof"></span> of <span data-bind="text: totalCount"></span>\
