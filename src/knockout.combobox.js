@@ -40,14 +40,14 @@
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var target = valueAccessor();
             ko.utils.registerEventHandler(element, "keyup", function (e) {
-                target({ keyCode: e.keyCode });
+                target(e.keyCode);
             });
         }
     };
 
     ko.bindingHandlers.combobox.ViewModel = function (options) {
         this.options = options;
-        this.keyPress = ko.observable();
+        this.keyPress = ko.observable().extend({ notify: "always" });
         this.keyPress.subscribe(this.onKeyPress, this);
         this.searchText = ko.observable("");
         this.searchText.subscribe(this.onSearch, this);
@@ -66,8 +66,8 @@
     };
 
     ko.bindingHandlers.combobox.ViewModel.prototype = {
-        onKeyPress: function (e) {
-            switch (e.keyCode) {
+        onKeyPress: function (keyCode) {
+            switch (keyCode) {
                 case 27:
                     this.hideDropdown();
                     break;
