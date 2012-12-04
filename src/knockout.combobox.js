@@ -3,16 +3,34 @@
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var options = ko.utils.extend(defaultOptions, ko.utils.unwrapObservable(valueAccessor()));
             var model = new ko.bindingHandlers.combobox.ViewModel(options);
-            ko.renderTemplate(comboboxTemplate, bindingContext.createChildContext(model), { templateEngine: stringTemplateEngine }, element, "replaceNode");
+            ko.renderTemplate(comboboxTemplate, bindingContext.createChildContext(model), { templateEngine: stringTemplateEngine }, element, "replaceChildren");
+
+            return { controlsDescendantBindings: true };
         }
     };
 
     ko.bindingHandlers.flexibleTemplate = {
+        engines: {},
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var options = ko.utils.unwrapObservable(valueAccessor());
-            var engine = document.getElementById(options.template) != null ? null : { templateEngine: stringTemplateEngine };
+            var engines = ko.bindingHandlers.flexibleTemplate.engines;
+            var engine = engines[options.template];
 
-            ko.renderTemplate(options.template, bindingContext.createChildContext(options.data), engine, element, "replaceChildren");
+            var success = false;
+            do {
+                try {
+                    ko.renderTemplate(options.template, bindingContext.createChildContext(options.data), engine, element, "replaceChildren");
+                    success = true;
+                    engines[options.template] = engine;
+                }
+                catch (err) {
+                    if (engine != null)
+                        throw "Template engine not found";
+
+                    engine = { templateEngine: stringTemplateEngine };
+                }
+
+            } while (!success)
 
             return { controlsDescendantBindings: true };
         }
