@@ -57,7 +57,7 @@
     ko.bindingHandlers.keys = {
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var target = valueAccessor();
-            ko.utils.registerEventHandler(element, "keyup", function (e) {
+            ko.utils.registerEventHandler(element, "keydown", function (e) {
                 target(e.keyCode);
             });
         }
