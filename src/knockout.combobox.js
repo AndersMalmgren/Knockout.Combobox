@@ -270,7 +270,7 @@
     //Built in templates
     var comboboxTemplate = '<div data-bind="keys: keyPress">\
         <input data-bind="value: searchText, valueUpdate: \'afterkeydown\'"></input>\
-        <button data-bind="click: forceShow">Arrow down</button>\
+        <button data-bind="click: forceShow, css: { open: dropdownVisible }">Arrow down</button>\
         <div data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
             <!-- ko foreach: dropdownItems -->\
                 <div data-bind="click: $parent.selected.bind($parent), event: { mouseover: $parent.active.bind($parent), mouseout: $parent.inactive.bind($parent) }, css: { active: isActive },  flexibleTemplate: { template: $parent.rowTemplate, data: $data.item }"></div>\
