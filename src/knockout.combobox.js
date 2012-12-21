@@ -269,17 +269,14 @@
 
     //Built in templates
     var comboboxTemplate = '<div data-bind="keys: keyPress">\
-        <input data-bind="value: searchText, valueUpdate: \'afterkeydown\'"></input>\
-        <button data-bind="click: forceShow">Arrow down</button>\
-        <div data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
+        <input placeholder="Placeholder text .." data-bind="value: searchText, valueUpdate: \'afterkeydown\'"></input><button class="btn btn-arrow" data-bind="click: forceShow"><span class="caret"></span></button>\
+        <div class="dropdown-menu" data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
             <!-- ko foreach: dropdownItems -->\
                 <div data-bind="click: $parent.selected.bind($parent), event: { mouseover: $parent.active.bind($parent), mouseout: $parent.inactive.bind($parent) }, css: { active: isActive },  flexibleTemplate: { template: $parent.rowTemplate, data: $data.item }"></div>\
             <!-- /ko -->\
-            <div data-bind="with: paging">\
-                Showing <span data-bind="text: currentFloor"></span>-<span data-bind="text: currentRoof"></span> of <span data-bind="text: totalCount"></span>\
-                <div data-bind="visible: show, foreach: pages">\
-                    <button data-bind="click: $parent.pageSelected.bind($parent), text: name, disable: isCurrent"></button>\
-                </div>\
+            <div class="nav" data-bind="with: paging">\
+                <p class="counter">Showing <span data-bind="text: currentFloor"></span>-<span data-bind="text: currentRoof"></span> of <span data-bind="text: totalCount"></span></p>\
+                <div class="pagination"><ul data-bind="visible: show, foreach: pages"><li data-bind="click: $parent.pageSelected.bind($parent), text: name, disable: isCurrent, css: {current: isCurrent}"></li></ul></div>\
             </div>\
         </div>\
     </div>';
