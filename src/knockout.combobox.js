@@ -1,7 +1,13 @@
 (function () {
     ko.bindingHandlers.combobox = {
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-            var options = ko.utils.extend(defaultOptions, ko.utils.unwrapObservable(valueAccessor()));
+            var options = ko.utils.unwrapObservable(valueAccessor());
+            for (var index in defaultOptions) {
+                if (options[index] === undefined) {
+                    options[index] = defaultOptions[index];
+                }
+
+            }
             var model = new ko.bindingHandlers.combobox.ViewModel(options);
             ko.renderTemplate(comboboxTemplate, bindingContext.createChildContext(model), { templateEngine: stringTemplateEngine }, element, "replaceChildren");
 
@@ -69,6 +75,8 @@
         this.keyPress.subscribe(this.onKeyPress, this);
         this.searchText = ko.observable("");
         this.searchText.subscribe(this.onSearch, this);
+        this.placeholder = options.placeholder;
+
         this.options.selected.subscribe(this.setSelectedText, this);
         if (this.options.selected() != null) {
             this.setSelectedText(this.options.selected());
@@ -269,7 +277,7 @@
 
     //Built in templates
     var comboboxTemplate = '<div data-bind="keys: keyPress">\
-        <input placeholder="Placeholder text .." data-bind="value: searchText, valueUpdate: \'afterkeydown\'"></input><button class="btn btn-arrow" data-bind="click: forceShow, css: { open: dropdownVisible }"><span class="caret"></span></button>\
+        <input data-bind="value: searchText, valueUpdate: \'afterkeydown\', attr: { placeholder: placeholder }"></input><button class="btn btn-arrow" data-bind="click: forceShow, css: { open: dropdownVisible }"><span class="caret"></span></button>\
         <div class="dropdown-menu" data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
             <!-- ko foreach: dropdownItems -->\
                 <div data-bind="click: $parent.selected.bind($parent), event: { mouseover: $parent.active.bind($parent), mouseout: $parent.inactive.bind($parent) }, css: { active: isActive },  flexibleTemplate: { template: $parent.rowTemplate, data: $data.item }"></div>\
