@@ -46,7 +46,7 @@
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var target = valueAccessor();
             var clickedIn = false;
-            ko.utils.registerEventHandler(document.body, "click", function (e) {
+            ko.utils.registerEventHandler(document, "click", function (e) {
                 if (!clickedIn) {
                     target(e.target == element);
                 }
