@@ -8,7 +8,7 @@ ViewModel = function () {
 ViewModel.prototype = {
     getData: function (options) {
         if (options.page == 0) {
-            options.total = Math.floor((Math.random() * 200) + 1); 
+            options.total = Math.floor((Math.random() * 200) + 1);
         }
 
         var data = [];
@@ -18,7 +18,11 @@ ViewModel.prototype = {
             data.push({ name: options.text + " " + index });
         }
 
-        options.callback({ data: data, total: options.total });
+        //Simulate async
+        var delay = Math.floor((Math.random() * 100) + 10); ;
+        setTimeout(function () {
+            options.callback({ data: data, total: options.total });
+        }, delay);
     }
 };
 

@@ -124,7 +124,13 @@
         getData: function (page) {
             var dataSource = ko.utils.unwrapObservable(this.options.dataSource);
             if (typeof dataSource == 'function') {
-                dataSource({ text: this.searchText(), page: page ? page : 0, pageSize: this.options.pageSize, total: this.paging.totalCount(), callback: this.getDataCallback.bind(this) });
+                var text = this.searchText();
+                var callback = function (result) {
+                    if (this.searchText() == text) {
+                        this.getDataCallback(result);
+                    }
+                }.bind(this);
+                dataSource({ text: text, page: page ? page : 0, pageSize: this.options.pageSize, total: this.paging.totalCount(), callback: callback });
             } else {
             }
         },
