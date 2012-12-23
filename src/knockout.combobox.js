@@ -8,7 +8,7 @@
                 }
 
             }
-            var model = new ko.bindingHandlers.combobox.ViewModel(options);
+            var model = new ko.bindingHandlers.combobox.ViewModel(options, viewModel);
             ko.renderTemplate(comboboxTemplate, bindingContext.createChildContext(model), { templateEngine: stringTemplateEngine }, element, "replaceChildren");
 
             return { controlsDescendantBindings: true };
@@ -69,13 +69,16 @@
         }
     };
 
-    ko.bindingHandlers.combobox.ViewModel = function (options) {
+    ko.bindingHandlers.combobox.ViewModel = function (options, viewModel) {
         this.options = options;
         this.keyPress = ko.observable().extend({ notify: "always" });
         this.keyPress.subscribe(this.onKeyPress, this);
         this.searchText = ko.observable("");
         this.searchText.subscribe(this.onSearch, this);
         this.placeholder = options.placeholder;
+        this.viewModel = viewModel;
+        this.dataSource = ko.utils.unwrapObservable(this.options.dataSource);
+        this.functionDataSource = typeof this.dataSource == 'function';
 
         this.options.selected.subscribe(this.setSelectedText, this);
         if (this.options.selected() != null) {
@@ -84,7 +87,7 @@
 
         this.dropdownVisible = ko.observable(false);
         this.dropdownItems = ko.observableArray();
-
+                
         this.paging = new ko.bindingHandlers.combobox.PagingViewModel(options, this.getData.bind(this), this.dropdownItems);
         this.currentActiveIndex = 0;
 
@@ -122,15 +125,14 @@
             this.searchTimeout = setTimeout(this.getData.bind(this), 200);
         },
         getData: function (page) {
-            var dataSource = ko.utils.unwrapObservable(this.options.dataSource);
-            if (typeof dataSource == 'function') {
+            if (this.functionDataSource) {
                 var text = this.searchText();
                 var callback = function (result) {
                     if (this.searchText() == text) {
                         this.getDataCallback(result);
                     }
-                }.bind(this);
-                dataSource({ text: text, page: page ? page : 0, pageSize: this.options.pageSize, total: this.paging.totalCount(), callback: callback });
+                } .bind(this);
+                this.dataSource.call(this.viewModel, { text: text, page: page ? page : 0, pageSize: this.options.pageSize, total: this.paging.totalCount(), callback: callback });
             } else {
             }
         },
