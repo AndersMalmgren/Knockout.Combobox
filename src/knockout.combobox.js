@@ -183,27 +183,34 @@
         },
         navigate: function (direction) {
             if (this.dropdownVisible() || this.currentActiveIndex == 0) {
-                this.inactive(this.getCurrentActiveItem());
+                this.unnavigated(this.getCurrentActiveItem());
                 this.currentActiveIndex += direction;
                 this.currentActiveIndex = this.currentActiveIndex < 0 ? 0 : this.currentActiveIndex;
                 this.currentActiveIndex = this.currentActiveIndex >= this.paging.itemCount() ? this.paging.itemCount() - 1 : this.currentActiveIndex;
-                this.active(this.getCurrentActiveItem());
+                this.navigated(this.getCurrentActiveItem());
             }
         },
         getCurrentActiveItem: function () {
             return this.dropdownItems()[this.currentActiveIndex];
         },
+        navigated: function (item) {
+            item.navigated(true);
+        },
+        unnavigated: function (item) {
+            item.navigated(false);
+        },
         active: function (item) {
-            item.isActive(true);
+            item.active(true);
         },
         inactive: function (item) {
-            item.isActive(false);
+            item.active(false);
         }
     };
 
     ko.bindingHandlers.combobox.ItemViewModel = function (item) {
         this.item = item;
-        this.isActive = ko.observable();
+        this.navigated = ko.observable();
+        this.active = ko.observable();
     };
 
     ko.bindingHandlers.combobox.PagingViewModel = function (options, callback, dropdownItems) {
@@ -297,7 +304,7 @@
         <input data-bind="value: searchText, valueUpdate: \'afterkeydown\', hasfocus: inputHasFocus, attr: { placeholder: placeholder }"></input><button class="btn btn-arrow" data-bind="click: forceShow, hasfocus: forceInputFocus, css: { open: dropdownVisible }"><span class="caret"></span></button>\
         <div class="dropdown-menu" data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
             <!-- ko foreach: dropdownItems -->\
-                <div data-bind="click: $parent.selected.bind($parent), event: { mouseover: $parent.active.bind($parent), mouseout: $parent.inactive.bind($parent) }, css: { active: isActive },  flexibleTemplate: { template: $parent.rowTemplate, data: $data.item }"></div>\
+                <div data-bind="click: $parent.selected.bind($parent), event: { mouseover: $parent.active.bind($parent), mouseout: $parent.inactive.bind($parent) }, css: { active: navigated, highlighted: active },  flexibleTemplate: { template: $parent.rowTemplate, data: $data.item }"></div>\
             <!-- /ko -->\
             <div class="nav" data-bind="with: paging">\
                 <p class="counter">Showing <span data-bind="text: currentFloor"></span>-<span data-bind="text: currentRoof"></span> of <span data-bind="text: totalCount"></span></p>\

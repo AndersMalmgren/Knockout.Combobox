@@ -116,12 +116,13 @@ h3 { margin-bottom: 20px; }
     word-wrap: break-word;
 }
 
-.active {
+.active, .highlighted {
     background-color: #0081C2;
     background-image: linear-gradient(to bottom, #0088CC, #0077B3);
 	color: #fff;
 }
-.active:hover {
+
+.highlighted:hover {
     cursor: pointer;
 }
 
