@@ -131,7 +131,7 @@
 
             this.resetDropdown();
             clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(this.getData.bind(this), 200);
+            this.searchTimeout = setTimeout(this.getData.bind(this), this.options.keyPressSearchTimeout);
         },
         getData: function (page) {
             if (this.functionDataSource) {
@@ -320,6 +320,7 @@
         valueMember: "name",
         pageSize: 10,
         paging: true,
-        pagingLinks: 4
+        pagingLinks: 4,
+        keyPressSearchTimeout: 200
     };
 } ());
