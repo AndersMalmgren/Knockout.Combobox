@@ -91,13 +91,14 @@
         this.dropdownVisible = ko.observable(false);
         this.dropdownItems = ko.observableArray();
 
-        this.hasFocus = ko.observable();
         this.inputHasFocus = ko.observable();
-        this.forceInputFocus = ko.computed(function () {
-            if (this.hasFocus() && !this.inputHasFocus()) {
+        this.forceInputFocus = ko.computed({
+            read: function () {
+                return false;
+            },
+            write: function (value) {
                 this.inputHasFocus(true);
-            };
-            return false;
+            }
         }, this);
 
         this.paging = new ko.bindingHandlers.combobox.PagingViewModel(options, this.getData.bind(this), this.dropdownItems);
@@ -303,7 +304,7 @@
     };
 
     //Built in templates
-    var comboboxTemplate = '<div data-bind="keys: keyPress, hasfocus: hasFocus">\
+    var comboboxTemplate = '<div data-bind="keys: keyPress">\
         <input data-bind="value: searchText, valueUpdate: \'afterkeydown\', hasfocus: inputHasFocus, attr: { placeholder: placeholder }"></input><button class="btn btn-arrow" data-bind="click: forceShow, hasfocus: forceInputFocus, css: { open: dropdownVisible }"><span class="caret"></span></button>\
         <div class="dropdown-menu" data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
             <!-- ko foreach: dropdownItems -->\
