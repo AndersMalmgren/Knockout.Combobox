@@ -1,5 +1,8 @@
 (function () {
     ko.bindingHandlers.combobox = {
+        setDefaults: function (options) {
+            ko.utils.extend(defaultOptions, options);
+        },
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var options = ko.utils.unwrapObservable(valueAccessor());
             for (var index in defaultOptions) {
