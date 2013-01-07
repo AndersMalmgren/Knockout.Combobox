@@ -124,8 +124,8 @@
                     break;
             }
         },
-        onSearch: function (value, a) {
-            if (this.explicitSet) {
+        onSearch: function (value) {
+            if (this.explicitSet || value.length < this.options.minimumSearchTextLength) {
                 return;
             }
 
@@ -321,6 +321,7 @@
         pageSize: 10,
         paging: true,
         pagingLinks: 4,
-        keyPressSearchTimeout: 200
+        keyPressSearchTimeout: 200,
+        minimumSearchTextLength: 1
     };
 } ());

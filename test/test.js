@@ -38,3 +38,35 @@ asyncTest("When datasource is binded to other scope than ViewModel", function ()
     var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model);
     combobox.searchText("A");
 });
+
+asyncTest("When text is shorter than supplied in options", function () {
+    var model = new ComboboxViewModel();
+    var options = defaults();
+    options.minimumSearchTextLength = 2;
+
+    options.dataSource = function () {
+        ok(false, "It should not search");
+    };
+
+    setTimeout(function () {
+        ok(true);
+        start();
+    }, 300);
+
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model);
+    combobox.searchText("A");
+});
+
+asyncTest("When text is longer than supplied in options", function () {
+    var model = new ComboboxViewModel();
+    var options = defaults();
+    options.minimumSearchTextLength = 2;
+
+    options.dataSource = function () {
+        ok(true, "It should do search");
+        start();
+    };
+
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model);
+    combobox.searchText("Abc");
+});
