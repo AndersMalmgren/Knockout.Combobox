@@ -70,3 +70,13 @@ asyncTest("When text is longer than supplied in options", function () {
     var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model);
     combobox.searchText("Abc");
 });
+
+test("When no items are in list and navigating", function () {
+    var model = new ComboboxViewModel();
+    var options = defaults();
+
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model);
+    combobox.navigate(1);
+
+    ok(true, "Should not throw error");
+});

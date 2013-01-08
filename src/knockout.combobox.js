@@ -146,10 +146,10 @@
             ko.utils.arrayForEach(result.data, function (item) {
                 arr.push(new ko.bindingHandlers.combobox.ItemViewModel(item));
             } .bind(this));
-            this.dropdownItems(arr);
-            this.navigate(0);
+            this.dropdownItems(arr);            
             this.paging.totalCount(result.total);
             this.dropdownVisible(result.data.length > 0);
+            this.navigate(0);
         },
         forceFocus: function () {
             this.searchHasFocus(true);
@@ -183,7 +183,7 @@
             }
         },
         navigate: function (direction) {
-            if (this.dropdownVisible() || this.currentActiveIndex == 0) {
+            if (this.dropdownVisible()) {
                 this.unnavigated(this.getCurrentActiveItem());
                 this.currentActiveIndex += direction;
                 this.currentActiveIndex = this.currentActiveIndex < 0 ? 0 : this.currentActiveIndex;
