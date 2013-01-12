@@ -57,7 +57,7 @@
                 clickedIn = false;
             });
 
-            ko.utils.registerEventHandler(element.parentElement, "click", function (e) {
+            ko.utils.registerEventHandler(element.parentNode || element.parentElement, "click", function (e) {
                 clickedIn = true;
             });
         }
