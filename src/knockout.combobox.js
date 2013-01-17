@@ -76,7 +76,7 @@
         this.options = options;
         this.keyPress = ko.observable().extend({ notify: "always" });
         this.keyPress.subscribe(this.onKeyPress, this);
-        this.searchText = ko.observable("").extend({ throttle: this.options.keyPressSearchTimeout });
+        this.searchText = ko.observable("");
         this.searchText.subscribe(this.onSearch, this);
         this.placeholder = options.placeholder;
         this.viewModel = viewModel;
@@ -126,7 +126,8 @@
             }
 
             this.resetDropdown();
-            this.getData();
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(this.getData.bind(this), this.options.keyPressSearchTimeout);
         },
         getData: function (page) {
             if (this.functionDataSource) {
@@ -145,7 +146,7 @@
             ko.utils.arrayForEach(result.data, function (item) {
                 arr.push(new ko.bindingHandlers.combobox.ItemViewModel(item));
             } .bind(this));
-            this.dropdownItems(arr);
+            this.dropdownItems(arr);            
             this.paging.totalCount(result.total);
             this.dropdownVisible(result.data.length > 0);
             this.navigate(0);
