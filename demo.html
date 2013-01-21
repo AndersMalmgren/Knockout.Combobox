@@ -11,13 +11,13 @@
 </head>
 <body>
 	<section>
-		<div class="combobox clearfix" data-bind="combobox: { dataSource: getData, selected: selected, placeholder: 'Select item' }"></div>
+		<div class="combobox clearfix" data-bind="combobox: { dataSource: getData, placeholder: 'Select item' }, comboboxValue: selected"></div>
 		<div>Selected: <span data-bind="text: selectedName"></span></div>
 	</section>
 
 	<section>
 		<h3>Custom item template</h3>
-		<div class="combobox clearfix" data-bind="combobox: { dataSource: getData, selected: selected, rowTemplate: 'row-template' }"></div>
+		<div class="combobox clearfix" data-bind="combobox: { dataSource: getData, rowTemplate: 'row-template' }, comboboxValue: selected"></div>
 		<div>Selected: <span data-bind="text: selectedName"></span></div>
 	</section>
 

@@ -11,7 +11,7 @@
                 }
 
             }
-            var model = new ko.bindingHandlers.combobox.ViewModel(options, viewModel);
+            var model = new ko.bindingHandlers.combobox.ViewModel(options, viewModel, allBindingsAccessor);
             ko.renderTemplate(comboboxTemplate, bindingContext.createChildContext(model), { templateEngine: stringTemplateEngine }, element, "replaceChildren");
 
             return { controlsDescendantBindings: true };
@@ -72,7 +72,7 @@
         }
     };
 
-    ko.bindingHandlers.combobox.ViewModel = function (options, viewModel) {
+    ko.bindingHandlers.combobox.ViewModel = function (options, viewModel, allBindingsAccessor) {
         this.options = options;
         this.keyPress = ko.observable().extend({ notify: "always" });
         this.keyPress.subscribe(this.onKeyPress, this);
@@ -82,10 +82,18 @@
         this.viewModel = viewModel;
         this.dataSource = ko.utils.unwrapObservable(this.options.dataSource);
         this.functionDataSource = typeof this.dataSource == 'function';
+        this.allBindingsAccessor = allBindingsAccessor;
 
-        this.options.selected.subscribe(this.setSelectedText, this);
-        if (this.options.selected() != null) {
-            this.setSelectedText(this.options.selected());
+        var value = allBindingsAccessor().comboboxValue
+        this.selectedIsObservable = ko.isObservable(value);
+
+        if (this.selectedIsObservable) {
+            value.subscribe(this.setSelectedText, this);
+        }
+
+        var unwrappedValue = ko.utils.unwrapObservable(value);
+        if (unwrappedValue != null) {
+            this.setSelectedText(unwrappedValue);
         }
 
         this.dropdownVisible = ko.observable(false);
@@ -146,7 +154,7 @@
             ko.utils.arrayForEach(result.data, function (item) {
                 arr.push(new ko.bindingHandlers.combobox.ItemViewModel(item));
             } .bind(this));
-            this.dropdownItems(arr);            
+            this.dropdownItems(arr);
             this.paging.totalCount(result.total);
             this.dropdownVisible(result.data.length > 0);
             this.navigate(0);
@@ -160,7 +168,10 @@
         },
         selected: function (item) {
             this.forceFocus();
-            this.options.selected(item.item);
+            this.writeValueToProperty(this.allBindingsAccessor().comboboxValue, this.allBindingsAccessor, "value", item.item);
+            if (!this.selectedIsObservable) {
+                this.setSelectedText(item.item);
+            }
             this.hideDropdown();
         },
         setSelectedText: function (item) {
@@ -205,6 +216,16 @@
         },
         inactive: function (item) {
             item.active(false);
+        },
+        //TODO: remove this function when writeValueToProperty is made public by KO team
+        writeValueToProperty: function (property, allBindingsAccessor, key, value, checkIfDifferent) {
+            if (!property || !ko.isObservable(property)) {
+                var propWriters = allBindingsAccessor()['_ko_property_writers'];
+                if (propWriters && propWriters[key])
+                    propWriters[key](value);
+            } else if (ko.isWriteableObservable(property) && (!checkIfDifferent || property.peek() !== value)) {
+                property(value);
+            }
         }
     };
 

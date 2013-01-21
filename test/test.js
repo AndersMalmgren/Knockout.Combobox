@@ -7,10 +7,13 @@ ComboboxViewModel.prototype = {
 };
 
 var defaults = function () {
-    return {
-        selected: ko.observable(),
+    return {        
         rowTemplate: ""
     }
+};
+
+var comboboxValueAccessor = function () {
+    return { comboboxValue: ko.observable() };
 };
 
 asyncTest("When datasource is called", function () {
@@ -22,7 +25,7 @@ asyncTest("When datasource is called", function () {
         start();
     }
 
-    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model);
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, comboboxValueAccessor);
     combobox.searchText("A");
 });
 
@@ -35,7 +38,7 @@ asyncTest("When datasource is binded to other scope than ViewModel", function ()
         start();
     } .bind("TEST");
 
-    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model);
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, comboboxValueAccessor);
     combobox.searchText("A");
 });
 
@@ -53,7 +56,7 @@ asyncTest("When text is shorter than supplied in options", function () {
         start();
     }, 300);
 
-    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model);
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, comboboxValueAccessor);
     combobox.searchText("A");
 });
 
@@ -67,7 +70,7 @@ asyncTest("When text is longer than supplied in options", function () {
         start();
     };
 
-    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model);
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, comboboxValueAccessor);
     combobox.searchText("Abc");
 });
 
@@ -75,7 +78,7 @@ test("When no items are in list and navigating", function () {
     var model = new ComboboxViewModel();
     var options = defaults();
 
-    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model);
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, comboboxValueAccessor);
     combobox.navigate(1);
 
     ok(true, "Should not throw error");
