@@ -176,7 +176,7 @@
         },
         setSelectedText: function (item) {
             this.explicitSet = true;
-            this.searchText(ko.utils.unwrapObservable(item[this.options.valueMember]));
+            this.searchText(ko.utils.unwrapObservable(item ? item[this.options.valueMember] : null));
             this.explicitSet = false;
         },
         hideDropdown: function () {

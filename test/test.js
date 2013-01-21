@@ -12,8 +12,9 @@ var defaults = function () {
     }
 };
 
+var selected = ko.observable();
 var comboboxValueAccessor = function () {
-    return { comboboxValue: ko.observable() };
+    return { comboboxValue: selected };
 };
 
 asyncTest("When datasource is called", function () {
@@ -80,6 +81,17 @@ test("When no items are in list and navigating", function () {
 
     var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, comboboxValueAccessor);
     combobox.navigate(1);
+
+    ok(true, "Should not throw error");
+});
+
+test("When selected is set to null", function () {
+    var model = new ComboboxViewModel();
+    var options = defaults();
+
+
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, comboboxValueAccessor);
+    comboboxValueAccessor().comboboxValue(null);
 
     ok(true, "Should not throw error");
 });
