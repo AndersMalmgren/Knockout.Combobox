@@ -17,7 +17,8 @@
                 },
                 write: function (value) {
                     writeValueToProperty(allBindingsAccessor().comboboxValue, allBindingsAccessor, "value", value);
-                }
+                },                
+                disposeWhenNodeIsRemoved: element
             })
 
             var model = new ko.bindingHandlers.combobox.ViewModel(options, viewModel, selected);
