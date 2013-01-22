@@ -8,13 +8,9 @@ ComboboxViewModel.prototype = {
 
 var defaults = function () {
     return {        
-        rowTemplate: ""
+        rowTemplate: "",
+        valueMember: "name"
     }
-};
-
-var selected = ko.observable();
-var comboboxValueAccessor = function () {
-    return { comboboxValue: selected };
 };
 
 asyncTest("When datasource is called", function () {
@@ -26,7 +22,7 @@ asyncTest("When datasource is called", function () {
         start();
     }
 
-    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, comboboxValueAccessor);
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, ko.observable());
     combobox.searchText("A");
 });
 
@@ -39,7 +35,7 @@ asyncTest("When datasource is binded to other scope than ViewModel", function ()
         start();
     } .bind("TEST");
 
-    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, comboboxValueAccessor);
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, ko.observable());
     combobox.searchText("A");
 });
 
@@ -57,7 +53,7 @@ asyncTest("When text is shorter than supplied in options", function () {
         start();
     }, 300);
 
-    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, comboboxValueAccessor);
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, ko.observable());
     combobox.searchText("A");
 });
 
@@ -71,7 +67,7 @@ asyncTest("When text is longer than supplied in options", function () {
         start();
     };
 
-    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, comboboxValueAccessor);
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, ko.observable());
     combobox.searchText("Abc");
 });
 
@@ -79,7 +75,7 @@ test("When no items are in list and navigating", function () {
     var model = new ComboboxViewModel();
     var options = defaults();
 
-    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, comboboxValueAccessor);
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, ko.observable());
     combobox.navigate(1);
 
     ok(true, "Should not throw error");
@@ -89,9 +85,11 @@ test("When selected is set to null", function () {
     var model = new ComboboxViewModel();
     var options = defaults();
 
+    var selected = ko.observable({ name: "Test" });
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, selected);
+    equal(combobox.searchText(), "Test", "The preselected value should be correct");
 
-    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, comboboxValueAccessor);
-    comboboxValueAccessor().comboboxValue(null);
+    selected(null);
 
-    ok(true, "Should not throw error");
+    equal(combobox.searchText(), null, "It should have updated text in combobox");
 });
