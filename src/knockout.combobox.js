@@ -12,17 +12,17 @@
 
             }
             var selected = ko.computed({
-                read: function () {
+                read: function() {
                     return ko.utils.unwrapObservable(allBindingsAccessor().comboboxValue);
                 },
-                write: function (value) {
+                write: function(value) {
                     writeValueToProperty(allBindingsAccessor().comboboxValue, allBindingsAccessor, "value", value);
-                },                
+                },
                 disposeWhenNodeIsRemoved: element
-            })
+            });
 
             var model = new ko.bindingHandlers.combobox.ViewModel(options, viewModel, selected);
-            ko.renderTemplate(comboboxTemplate, bindingContext.createChildContext(model), { templateEngine: stringTemplateEngine }, element, "replaceChildren");
+            renderTemplate(element, options.comboboxTemplate, model, bindingContext);
 
             return { controlsDescendantBindings: true };
         }
@@ -32,24 +32,7 @@
         engines: {},
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var options = ko.utils.unwrapObservable(valueAccessor());
-            var engines = ko.bindingHandlers.flexibleTemplate.engines;
-            var engine = engines[options.template];
-
-            var success = false;
-            do {
-                try {
-                    ko.renderTemplate(options.template, bindingContext.createChildContext(options.data), engine, element, "replaceChildren");
-                    success = true;
-                    engines[options.template] = engine;
-                }
-                catch (err) {
-                    if (engine != null)
-                        throw "Template engine not found";
-
-                    engine = { templateEngine: stringTemplateEngine };
-                }
-
-            } while (!success)
+            renderTemplate(element, options.template, options.data, bindingContext);
 
             return { controlsDescendantBindings: true };
         }
@@ -301,7 +284,7 @@
     };
 
     //TODO: remove this function when writeValueToProperty is made public by KO team
-    var writeValueToProperty = function (property, allBindingsAccessor, key, value, checkIfDifferent) {
+    var writeValueToProperty = function(property, allBindingsAccessor, key, value, checkIfDifferent) {
         if (!property || !ko.isObservable(property)) {
             var propWriters = allBindingsAccessor()['_ko_property_writers'];
             if (propWriters && propWriters[key])
@@ -309,7 +292,27 @@
         } else if (ko.isWriteableObservable(property) && (!checkIfDifferent || property.peek() !== value)) {
             property(value);
         }
-    }
+    };
+
+    var renderTemplate = function (element, template, data, bindingContext) {
+        var engines = ko.bindingHandlers.flexibleTemplate.engines;
+        var engine = engines[template];
+
+        var success = false;
+        do {
+            try {
+                ko.renderTemplate(template, bindingContext.createChildContext(data), engine, element, "replaceChildren");
+                success = true;
+                engines[template] = engine;
+            } catch(err) {
+                if (engine != null)
+                    throw "Template engine not found";
+
+                engine = { templateEngine: stringTemplateEngine };
+            }
+
+        } while (!success)
+    };
 
     //string template source engine
     var stringTemplateSource = function (template) {
@@ -341,7 +344,8 @@
 
     var rowTemplate = '<span data-bind="text: $$valueMember&&"></span>';
 
-    defaultOptions = {
+    var defaultOptions = {
+        comboboxTemplate: comboboxTemplate,
         rowTemplate: rowTemplate,
         valueMember: "name",
         pageSize: 10,
