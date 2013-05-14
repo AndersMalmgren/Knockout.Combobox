@@ -1,6 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{41D2DD34-0695-461A-9F6B-6399D8D1B632}"
+	ProjectSection(SolutionItems) = preProject
+		src\knockout.combobox.js = src\knockout.combobox.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B92D5ECC-6EEE-48D9-8043-82FA25211BEE}"
+	ProjectSection(SolutionItems) = preProject
+		test\runner.html = test\runner.html
+		test\test.js = test\test.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo", "demo", "{507635B0-F9E2-4832-B801-DEA4A5D8C13A}"
+	ProjectSection(SolutionItems) = preProject
+		demo.css = demo.css
+		demo.html = demo.html
+		demo.js = demo.js
+		reset.css = reset.css
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
