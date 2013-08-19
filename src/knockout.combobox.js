@@ -143,7 +143,7 @@
             } .bind(this));
             this.dropdownItems(arr);
             this.paging.totalCount(result.total);
-            this.dropdownVisible(result.data.length > 0);
+            this.dropdownVisible(true);
             this.navigate(0);
         },
         forceFocus: function () {
@@ -178,7 +178,7 @@
             }
         },
         navigate: function (direction) {
-            if (this.dropdownVisible()) {
+            if (this.dropdownItems().length > 0 && this.dropdownVisible()) {
                 this.unnavigated(this.getCurrentActiveItem());
                 this.currentActiveIndex += direction;
                 this.currentActiveIndex = this.currentActiveIndex < 0 ? 0 : this.currentActiveIndex;
@@ -220,7 +220,7 @@
         }, this);
 
         this.currentFloor = ko.computed(function () {
-            return (this.currentPage() * options.pageSize) + 1;
+            return this.itemCount() === 0 ? 0 : (this.currentPage() * options.pageSize) + 1;
         }, this);
 
         this.currentRoof = ko.computed(function () {
