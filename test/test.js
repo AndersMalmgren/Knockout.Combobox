@@ -7,10 +7,11 @@ ComboboxViewModel.prototype = {
 };
 
 var defaults = function () {
-    return {        
+    return {
         rowTemplate: "",
-        valueMember: "name"
-    }
+        valueMember: "name",
+        pageSize: 10
+    };
 };
 
 asyncTest("When datasource is called", function () {
@@ -92,4 +93,22 @@ test("When selected is set to null", function () {
     selected(null);
 
     equal(combobox.searchText(), null, "It should have updated text in combobox");
+});
+
+asyncTest("When no items are returned", function () {
+    var model = new ComboboxViewModel();
+    var options = defaults();
+    options.dataSource = function (options) {
+        options.callback({
+            data: [],
+            total: 1000
+        });
+        start();
+        equal(combobox.dropdownVisible(), true, "It should have shown dropdown");
+        equal(combobox.paging.currentFloor(), 0, "Should show zero of total items in paging");
+        
+    };
+
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, ko.observable());
+    combobox.searchText("Abc");
 });
