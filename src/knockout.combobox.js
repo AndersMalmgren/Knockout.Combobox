@@ -84,7 +84,7 @@
         }
 
         this.dropdownVisible = ko.observable(false);
-        this.dropdownItems = ko.observableArray();
+        this.dropdownItems = options.dropdownItemsArray || ko.observableArray();
 
         this.searchHasFocus = ko.observable();
 
