@@ -112,3 +112,24 @@ asyncTest("When no items are returned", function () {
     var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, ko.observable());
     combobox.searchText("Abc");
 });
+
+asyncTest("When selected member is a non observable", function () {
+    var view = $("<div data-bind='combobox: { dataSource: getData }, comboboxValue: selected'></div>");
+    view.appendTo("body");
+    var model = {
+        selected: null,
+        getData: function (options) {
+            console.log("trigger");
+            options.callback({ data: [{ name: "Test"}], total: 1 });
+
+            view.find(".active").click();
+
+            start();
+            ok(model.selected != null, "It should have updated reference");
+            view.remove();
+        }
+    };
+
+    ko.applyBindings(model, view[0]);
+    view.find("input").val("Foo").change();
+});

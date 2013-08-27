@@ -16,7 +16,7 @@
                     return ko.utils.unwrapObservable(allBindingsAccessor().comboboxValue);
                 },
                 write: function(value) {
-                    writeValueToProperty(allBindingsAccessor().comboboxValue, allBindingsAccessor, "value", value);
+                    writeValueToProperty(allBindingsAccessor().comboboxValue, allBindingsAccessor, "comboboxValue", value);
                 },
                 disposeWhenNodeIsRemoved: element
             });
