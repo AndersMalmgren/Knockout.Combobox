@@ -11,12 +11,14 @@
                 }
 
             }
+            var selectedIsObservable = ko.isObservable(allBindingsAccessor().comboboxValue);
             var selected = ko.computed({
-                read: function() {
+                read: function () {
                     return ko.utils.unwrapObservable(allBindingsAccessor().comboboxValue);
                 },
-                write: function(value) {
+                write: function (value) {
                     writeValueToProperty(allBindingsAccessor().comboboxValue, allBindingsAccessor, "comboboxValue", value);
+                    if (!selectedIsObservable) selected.notifySubscribers(value);
                 },
                 disposeWhenNodeIsRemoved: element
             });
@@ -284,7 +286,7 @@
     };
 
     //TODO: remove this function when writeValueToProperty is made public by KO team
-    var writeValueToProperty = function(property, allBindingsAccessor, key, value, checkIfDifferent) {
+    var writeValueToProperty = function (property, allBindingsAccessor, key, value, checkIfDifferent) {
         if (!property || !ko.isObservable(property)) {
             var propWriters = allBindingsAccessor()['_ko_property_writers'];
             if (propWriters && propWriters[key])
@@ -304,7 +306,7 @@
                 ko.renderTemplate(template, bindingContext.createChildContext(data), engine, element, "replaceChildren");
                 success = true;
                 engines[template] = engine;
-            } catch(err) {
+            } catch (err) {
                 if (engine != null)
                     throw "Template engine not found";
 
