@@ -114,7 +114,7 @@ asyncTest("When no items are returned", function () {
 });
 
 asyncTest("When selected member is a non observable", function () {
-    var view = $("<div data-bind='combobox: { dataSource: getData }, comboboxValue: selected'></div>");
+    var view = $("<div data-bind='combobox: { dataSource: getData, keyPressSearchTimeout: 0 }, comboboxValue: selected'></div>");
     view.appendTo("body");
     var model = {
         selected: null,
@@ -122,14 +122,14 @@ asyncTest("When selected member is a non observable", function () {
             console.log("trigger");
             options.callback({ data: [{ name: "Test"}], total: 1 });
 
-            view.find(".active").click();
-
             start();
+            view.find(".active").click();
             ok(model.selected != null, "It should have updated reference");
+            equal(input.val(), "Test", "Input should be updated with selected value");
             view.remove();
         }
     };
 
     ko.applyBindings(model, view[0]);
-    view.find("input").val("Foo").change();
+    var input = view.find("input").val("Foo").change();
 });
