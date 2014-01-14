@@ -38,6 +38,12 @@
         <span data-bind="text: name"></span><span>Custom template stuff</span>
     </script>
 
+	<section>
+		<h3>Client side data</h3>
+		<div class="combobox clearfix" data-bind="combobox: { dataSource: countries, placeholder: 'Select country' }, comboboxValue: country"></div>
+		<div>Selected: <span data-bind="text: countryName"></span></div>
+	</section>
+
     <script src="demo.js" type="text/javascript"></script>
 </body>
 </html>
