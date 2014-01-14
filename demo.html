@@ -16,6 +16,12 @@
 	</section>
 
 	<section>
+        <h3>Sync</h3>
+		<div class="combobox clearfix" data-bind="combobox: { dataSource: getDataSync, placeholder: 'Select item' }, comboboxValue: selected"></div>
+		<div>Selected: <span data-bind="text: selectedName"></span></div>
+	</section>
+
+	<section>
 		<h3>Custom item template</h3>
 		<div class="combobox clearfix" data-bind="combobox: { dataSource: getData, rowTemplate: 'row-template' }, comboboxValue: selected"></div>
 		<div>Selected: <span data-bind="text: selectedName"></span></div>
