@@ -1,14 +1,4 @@
 (function () {
-    var util = {
-        noop: function () { },
-        isObject: function (value) {
-            return value === Object(value);
-        },
-        isThenable: function (object) {
-            return util.isObject(object) && typeof object.then === "function";
-        }
-    };
-
     ko.bindingHandlers.combobox = {
         setDefaults: function (options) {
             ko.utils.extend(defaultOptions, options);
@@ -153,8 +143,8 @@
                 };
                 var result = this.dataSource.call(this.viewModel, options);
                 if (result) {
-                    options.callback = util.noop;
-                    if (util.isThenable(result)) {
+                    options.callback = noop;
+                    if (isThenable(result)) {
                         result.then(callback);
                     } else {
                         callback(result);
@@ -308,6 +298,14 @@
         reset: function () {
             this.currentPage(0);
         }
+    };
+
+    var noop = function () { };
+    var isObject = function (value) {
+        return value === Object(value);
+    };
+    var isThenable = function (object) {
+        return isObject(object) && typeof object.then === "function";
     };
 
     //TODO: remove this function when writeValueToProperty is made public by KO team
