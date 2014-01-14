@@ -75,8 +75,9 @@
         this.searchText.subscribe(this.onSearch, this);
         this.placeholder = options.placeholder;
         this.viewModel = viewModel;
-        this.dataSource = ko.utils.unwrapObservable(this.options.dataSource);
-        this.functionDataSource = typeof this.dataSource == 'function';
+        this.functionDataSource = !ko.isObservable(this.options.dataSource) && typeof this.options.dataSource == 'function'
+            ? this.options.dataSource
+            : null;
 
         this.selectedObservable = selectedObservable;
         this.selectedObservable.subscribe(this.setSelectedText, this);
@@ -141,7 +142,7 @@
                     total: this.paging.totalCount(),
                     callback: callback
                 };
-                var result = this.dataSource.call(this.viewModel, options);
+                var result = this.functionDataSource.call(this.viewModel, options);
                 if (result) {
                     options.callback = noop;
                     if (isThenable(result)) {
