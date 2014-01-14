@@ -75,8 +75,10 @@
         this.searchText.subscribe(this.onSearch, this);
         this.placeholder = options.placeholder;
         this.viewModel = viewModel;
-        this.dataSource = ko.utils.unwrapObservable(this.options.dataSource);
-        this.functionDataSource = typeof this.dataSource == 'function';
+        this.dataSource = this.options.dataSource;
+        this.functionDataSource = !ko.isObservable(this.dataSource) && typeof this.dataSource == 'function'
+            ? this.dataSource
+            : this.searchOnClientSide.bind(this);
 
         this.selectedObservable = selectedObservable;
         this.selectedObservable.subscribe(this.setSelectedText, this);
@@ -133,8 +135,23 @@
                     if (this.searchText() == text) {
                         this.getDataCallback(result);
                     }
-                } .bind(this);
-                this.dataSource.call(this.viewModel, { text: text, page: page ? page : 0, pageSize: this.options.pageSize, total: this.paging.totalCount(), callback: callback });
+                }.bind(this);
+                var options = {
+                    text: text,
+                    page: page ? page : 0,
+                    pageSize: this.options.pageSize,
+                    total: this.paging.totalCount(),
+                    callback: callback
+                };
+                var result = this.functionDataSource.call(this.viewModel, options);
+                if (result) {
+                    options.callback = noop;
+                    if (isThenable(result)) {
+                        result.then(callback);
+                    } else {
+                        callback(result);
+                    }
+                }
             } else {
             }
         },
@@ -162,7 +179,7 @@
         },
         setSelectedText: function (item) {
             this.explicitSet = true;
-            this.searchText(ko.utils.unwrapObservable(item ? item[this.options.valueMember] : null));
+            this.searchText(this.getLabel(item));
             this.explicitSet = false;
         },
         hideDropdown: function () {
@@ -202,6 +219,20 @@
         },
         inactive: function (item) {
             item.active(false);
+        },
+        getLabel: function (item) {
+            return ko.utils.unwrapObservable(item ? item[this.options.valueMember] : null);
+        },
+        searchOnClientSide: function (options) {
+            var lowerCaseText = (options.text || '').toLowerCase();
+            var self = this;
+            var filtered = ko.utils.arrayFilter(ko.utils.unwrapObservable(this.dataSource), function (item) {
+                return self.getLabel(item).toLowerCase().slice(0, lowerCaseText.length) == lowerCaseText;
+            });
+            return {
+                total: filtered.length, //be sure of calculate length before splice
+                data: filtered.splice(options.pageSize * options.page, options.pageSize)
+            };
         }
     };
 
@@ -283,6 +314,14 @@
         reset: function () {
             this.currentPage(0);
         }
+    };
+
+    var noop = function () { };
+    var isObject = function (value) {
+        return value === Object(value);
+    };
+    var isThenable = function (object) {
+        return isObject(object) && typeof object.then === "function";
     };
 
     //TODO: remove this function when writeValueToProperty is made public by KO team

@@ -5,6 +5,7 @@
 	<meta charset="utf-8" />
     <title>Combobox demo</title>
     <script src="http://knockoutjs.com/downloads/knockout-2.2.1.js" type="text/javascript"></script>    
+    <script src="https://raw.github.com/kriskowal/q/v0.9/q.js" type="text/javascript"></script>
     <script src="src/knockout.combobox.js" type="text/javascript"></script>
 	<link rel="stylesheet" href="reset.css" />
 	<link rel="stylesheet" href="demo.css" />
@@ -12,6 +13,18 @@
 <body>
 	<section>
 		<div class="combobox clearfix" data-bind="combobox: { dataSource: getData, placeholder: 'Select item' }, comboboxValue: selected"></div>
+		<div>Selected: <span data-bind="text: selectedName"></span></div>
+	</section>
+
+	<section>
+        <h3>Sync</h3>
+		<div class="combobox clearfix" data-bind="combobox: { dataSource: getDataSync, placeholder: 'Select item' }, comboboxValue: selected"></div>
+		<div>Selected: <span data-bind="text: selectedName"></span></div>
+	</section>
+
+	<section>
+        <h3>With promises</h3>
+		<div class="combobox clearfix" data-bind="combobox: { dataSource: getDataPromise, placeholder: 'Select item' }, comboboxValue: selected"></div>
 		<div>Selected: <span data-bind="text: selectedName"></span></div>
 	</section>
 
@@ -24,6 +37,12 @@
     <script id="row-template" type="text/html">
         <span data-bind="text: name"></span><span>Custom template stuff</span>
     </script>
+
+	<section>
+		<h3>Client side data</h3>
+		<div class="combobox clearfix" data-bind="combobox: { dataSource: countries, placeholder: 'Select country' }, comboboxValue: country"></div>
+		<div>Selected: <span data-bind="text: countryName"></span></div>
+	</section>
 
     <script src="demo.js" type="text/javascript"></script>
 </body>
