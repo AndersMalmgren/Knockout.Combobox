@@ -1,4 +1,14 @@
 (function () {
+    var util = {
+        noop: function () { },
+        isObject: function (value) {
+            return value === Object(value);
+        },
+        isThenable: function (object) {
+            return util.isObject(object) && typeof object.then === "function";
+        }
+    };
+
     ko.bindingHandlers.combobox = {
         setDefaults: function (options) {
             ko.utils.extend(defaultOptions, options);
@@ -133,8 +143,23 @@
                     if (this.searchText() == text) {
                         this.getDataCallback(result);
                     }
-                } .bind(this);
-                this.dataSource.call(this.viewModel, { text: text, page: page ? page : 0, pageSize: this.options.pageSize, total: this.paging.totalCount(), callback: callback });
+                }.bind(this);
+                var options = {
+                    text: text,
+                    page: page ? page : 0,
+                    pageSize: this.options.pageSize,
+                    total: this.paging.totalCount(),
+                    callback: callback
+                };
+                var result = this.dataSource.call(this.viewModel, options);
+                if (result) {
+                    options.callback = util.noop;
+                    if (util.isThenable(result)) {
+                        result.then(callback);
+                    } else {
+                        callback(result);
+                    }
+                }
             } else {
             }
         },
