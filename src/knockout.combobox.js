@@ -75,9 +75,10 @@
         this.searchText.subscribe(this.onSearch, this);
         this.placeholder = options.placeholder;
         this.viewModel = viewModel;
-        this.functionDataSource = !ko.isObservable(this.options.dataSource) && typeof this.options.dataSource == 'function'
-            ? this.options.dataSource
-            : null;
+        this.dataSource = this.options.dataSource;
+        this.functionDataSource = !ko.isObservable(this.dataSource) && typeof this.dataSource == 'function'
+            ? this.dataSource
+            : this.searchOnClientSide.bind(this);
 
         this.selectedObservable = selectedObservable;
         this.selectedObservable.subscribe(this.setSelectedText, this);
@@ -178,7 +179,7 @@
         },
         setSelectedText: function (item) {
             this.explicitSet = true;
-            this.searchText(ko.utils.unwrapObservable(item ? item[this.options.valueMember] : null));
+            this.searchText(this.getLabel(item));
             this.explicitSet = false;
         },
         hideDropdown: function () {
@@ -218,6 +219,20 @@
         },
         inactive: function (item) {
             item.active(false);
+        },
+        getLabel: function (item) {
+            return ko.utils.unwrapObservable(item ? item[this.options.valueMember] : null);
+        },
+        searchOnClientSide: function (options) {
+            var lowerCaseText = (options.text || '').toLowerCase();
+            var self = this;
+            var filtered = ko.utils.arrayFilter(ko.utils.unwrapObservable(this.dataSource), function (item) {
+                return self.getLabel(item).toLowerCase().slice(0, lowerCaseText.length) == lowerCaseText;
+            });
+            return {
+                total: filtered.length, //be sure of calculate length before splice
+                data: filtered.splice(options.pageSize * options.page, options.pageSize)
+            };
         }
     };
 
