@@ -11,12 +11,14 @@
                 }
 
             }
+            var selectedIsObservable = ko.isObservable(allBindingsAccessor().comboboxValue);
             var selected = ko.computed({
-                read: function() {
+                read: function () {
                     return ko.utils.unwrapObservable(allBindingsAccessor().comboboxValue);
                 },
-                write: function(value) {
-                    writeValueToProperty(allBindingsAccessor().comboboxValue, allBindingsAccessor, "value", value);
+                write: function (value) {
+                    writeValueToProperty(allBindingsAccessor().comboboxValue, allBindingsAccessor, "comboboxValue", value);
+                    if (!selectedIsObservable) selected.notifySubscribers(value);
                 },
                 disposeWhenNodeIsRemoved: element
             });
@@ -73,8 +75,10 @@
         this.searchText.subscribe(this.onSearch, this);
         this.placeholder = options.placeholder;
         this.viewModel = viewModel;
-        this.dataSource = ko.utils.unwrapObservable(this.options.dataSource);
-        this.functionDataSource = typeof this.dataSource == 'function';
+        this.dataSource = this.options.dataSource;
+        this.functionDataSource = !ko.isObservable(this.dataSource) && typeof this.dataSource == 'function'
+            ? this.dataSource
+            : this.searchOnClientSide.bind(this);
 
         this.selectedObservable = selectedObservable;
         this.selectedObservable.subscribe(this.setSelectedText, this);
@@ -84,7 +88,7 @@
         }
 
         this.dropdownVisible = ko.observable(false);
-        this.dropdownItems = ko.observableArray();
+        this.dropdownItems = options.dropdownItemsArray || ko.observableArray();
 
         this.searchHasFocus = ko.observable();
 
@@ -124,16 +128,28 @@
             clearTimeout(this.searchTimeout);
             this.searchTimeout = setTimeout(this.getData.bind(this), this.options.keyPressSearchTimeout);
         },
-        getData: function (page) {
-            if (this.functionDataSource) {
-                var text = this.searchText();
-                var callback = function (result) {
-                    if (this.searchText() == text) {
-                        this.getDataCallback(result);
-                    }
-                } .bind(this);
-                this.dataSource.call(this.viewModel, { text: text, page: page ? page : 0, pageSize: this.options.pageSize, total: this.paging.totalCount(), callback: callback });
-            } else {
+        getData: function(page) {
+            var text = this.searchText();
+            var callback = function(result) {
+                if (this.searchText() == text) {
+                    this.getDataCallback(result);
+                }
+            }.bind(this);
+            var options = {
+                text: text,
+                page: page ? page : 0,
+                pageSize: this.options.pageSize,
+                total: this.paging.totalCount(),
+                callback: callback
+            };
+            var result = this.functionDataSource.call(this.viewModel, options);
+            if (result) {
+                options.callback = noop;
+                if (isThenable(result)) {
+                    result.then(callback);
+                } else {
+                    callback(result);
+                }
             }
         },
         getDataCallback: function (result) {
@@ -143,7 +159,7 @@
             } .bind(this));
             this.dropdownItems(arr);
             this.paging.totalCount(result.total);
-            this.dropdownVisible(result.data.length > 0);
+            this.dropdownVisible(true);
             this.navigate(0);
         },
         forceFocus: function () {
@@ -160,7 +176,7 @@
         },
         setSelectedText: function (item) {
             this.explicitSet = true;
-            this.searchText(ko.utils.unwrapObservable(item ? item[this.options.valueMember] : null));
+            this.searchText(this.getLabel(item));
             this.explicitSet = false;
         },
         hideDropdown: function () {
@@ -178,7 +194,7 @@
             }
         },
         navigate: function (direction) {
-            if (this.dropdownVisible()) {
+            if (this.dropdownItems().length > 0 && this.dropdownVisible()) {
                 this.unnavigated(this.getCurrentActiveItem());
                 this.currentActiveIndex += direction;
                 this.currentActiveIndex = this.currentActiveIndex < 0 ? 0 : this.currentActiveIndex;
@@ -200,6 +216,20 @@
         },
         inactive: function (item) {
             item.active(false);
+        },
+        getLabel: function (item) {
+            return ko.utils.unwrapObservable(item ? item[this.options.valueMember] : null);
+        },
+        searchOnClientSide: function (options) {
+            var lowerCaseText = (options.text || '').toLowerCase();
+            var self = this;
+            var filtered = ko.utils.arrayFilter(ko.utils.unwrapObservable(this.dataSource), function (item) {
+                return self.getLabel(item).toLowerCase().slice(0, lowerCaseText.length) == lowerCaseText;
+            });
+            return {
+                total: filtered.length, //be sure of calculate length before splice
+                data: filtered.splice(options.pageSize * options.page, options.pageSize)
+            };
         }
     };
 
@@ -220,7 +250,7 @@
         }, this);
 
         this.currentFloor = ko.computed(function () {
-            return (this.currentPage() * options.pageSize) + 1;
+            return this.itemCount() === 0 ? 0 : (this.currentPage() * options.pageSize) + 1;
         }, this);
 
         this.currentRoof = ko.computed(function () {
@@ -283,8 +313,16 @@
         }
     };
 
+    var noop = function () { };
+    var isObject = function (value) {
+        return value === Object(value);
+    };
+    var isThenable = function (object) {
+        return isObject(object) && typeof object.then === "function";
+    };
+
     //TODO: remove this function when writeValueToProperty is made public by KO team
-    var writeValueToProperty = function(property, allBindingsAccessor, key, value, checkIfDifferent) {
+    var writeValueToProperty = function (property, allBindingsAccessor, key, value, checkIfDifferent) {
         if (!property || !ko.isObservable(property)) {
             var propWriters = allBindingsAccessor()['_ko_property_writers'];
             if (propWriters && propWriters[key])
@@ -304,7 +342,7 @@
                 ko.renderTemplate(template, bindingContext.createChildContext(data), engine, element, "replaceChildren");
                 success = true;
                 engines[template] = engine;
-            } catch(err) {
+            } catch (err) {
                 if (engine != null)
                     throw "Template engine not found";
 
