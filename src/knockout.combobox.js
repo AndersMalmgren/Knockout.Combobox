@@ -128,31 +128,28 @@
             clearTimeout(this.searchTimeout);
             this.searchTimeout = setTimeout(this.getData.bind(this), this.options.keyPressSearchTimeout);
         },
-        getData: function (page) {
-            if (this.functionDataSource) {
-                var text = this.searchText();
-                var callback = function (result) {
-                    if (this.searchText() == text) {
-                        this.getDataCallback(result);
-                    }
-                }.bind(this);
-                var options = {
-                    text: text,
-                    page: page ? page : 0,
-                    pageSize: this.options.pageSize,
-                    total: this.paging.totalCount(),
-                    callback: callback
-                };
-                var result = this.functionDataSource.call(this.viewModel, options);
-                if (result) {
-                    options.callback = noop;
-                    if (isThenable(result)) {
-                        result.then(callback);
-                    } else {
-                        callback(result);
-                    }
+        getData: function(page) {
+            var text = this.searchText();
+            var callback = function(result) {
+                if (this.searchText() == text) {
+                    this.getDataCallback(result);
                 }
-            } else {
+            }.bind(this);
+            var options = {
+                text: text,
+                page: page ? page : 0,
+                pageSize: this.options.pageSize,
+                total: this.paging.totalCount(),
+                callback: callback
+            };
+            var result = this.functionDataSource.call(this.viewModel, options);
+            if (result) {
+                options.callback = noop;
+                if (isThenable(result)) {
+                    result.then(callback);
+                } else {
+                    callback(result);
+                }
             }
         },
         getDataCallback: function (result) {
