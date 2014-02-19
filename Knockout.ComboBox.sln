@@ -14,10 +14,35 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B92D5ECC-6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo", "demo", "{507635B0-F9E2-4832-B801-DEA4A5D8C13A}"
 	ProjectSection(SolutionItems) = preProject
-		demo.css = demo.css
 		demo.html = demo.html
 		demo.js = demo.js
 		reset.css = reset.css
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{5831F3FE-6D35-449A-BBC9-B7124E39866E}"
+	ProjectSection(SolutionItems) = preProject
+		.build\build_output.proj = .build\build_output.proj
+		.build\create_nuget_package.cmd = .build\create_nuget_package.cmd
+		.build\EcmaScript.NET.modified.dll = .build\EcmaScript.NET.modified.dll
+		.build\GitVersionInfo.dll = .build\GitVersionInfo.dll
+		.build\ICSharpCode.SharpZipLib.dll = .build\ICSharpCode.SharpZipLib.dll
+		.build\Mono.Security.dll = .build\Mono.Security.dll
+		.build\NGit.dll = .build\NGit.dll
+		.build\NSch.dll = .build\NSch.dll
+		.build\NuGet.Config = .build\NuGet.Config
+		.build\NuGet.exe = .build\NuGet.exe
+		.build\NuGet.targets = .build\NuGet.targets
+		.build\Package.nuspec = .build\Package.nuspec
+		.build\readme.txt = .build\readme.txt
+		.build\Sharpen.dll = .build\Sharpen.dll
+		.build\versions.xml = .build\versions.xml
+		.build\Yahoo.Yui.Compressor.dll = .build\Yahoo.Yui.Compressor.dll
+		.build\Yahoo.Yui.Compressor.MsBuildTask.dll = .build\Yahoo.Yui.Compressor.MsBuildTask.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{B747BE67-1F4F-426E-B8CD-ACB29692C504}"
+	ProjectSection(SolutionItems) = preProject
+		css\knockout.combobox.css = css\knockout.combobox.css
 	EndProjectSection
 EndProject
 Global
