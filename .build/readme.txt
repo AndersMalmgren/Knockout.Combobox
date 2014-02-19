@@ -1,0 +1,1 @@
+Please see https://github.com/AndersMalmgren/Knockout.Combobox/wiki for more information on using this lib.

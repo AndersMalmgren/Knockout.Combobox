@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Start">
+  <PropertyGroup>
+    <ReleaseNotes></ReleaseNotes>
+    <NugetFolder></NugetFolder>
+    <Src></Src>
+    <Css></Css>
+    <DeliverFolder></DeliverFolder>
+    <Version></Version>
+    <TargetFileName>knockout.combobox-</TargetFileName>
+  </PropertyGroup>
+  
+  <UsingTask
+        TaskName="CompressorTask"
+        AssemblyFile="Yahoo.Yui.Compressor.MsBuildTask.dll"></UsingTask>
+
+  <UsingTask
+        TaskName="VersionInfoTask"
+        AssemblyFile="GitVersionInfo.dll"></UsingTask>
+
+  <UsingTask
+        TaskName="CreateVersionInfoFileTask"
+        AssemblyFile="GitVersionInfo.dll"></UsingTask>
+
+  <Target Name="Start">
+    <CallTarget Targets="DeleteNugetFolder"/>
+    
+    <CallTarget Targets="GetGitVersion"/>        
+
+    <CallTarget Targets="MinimizeJS"/>
+
+    <CallTarget Targets="CopyFiles"/>
+    <CallTarget Targets="PatchNuspec"/>
+    <CallTarget Targets="Pack"/>
+    <CallTarget Targets="Deliver"/>
+  </Target>
+
+  <Target Name="DeleteOutput">
+    <RemoveDir Directories="$(BuildDir)" />
+  </Target>
+
+  <Target Name="DeleteNugetFolder">
+    <RemoveDir Directories="$(NugetFolder)"/>
+  </Target>
+
+  <Target Name="GetGitVersion">
+    <VersionInfoTask RepoPath="..\" Path="src">
+      <Output PropertyName="Version" TaskParameter="Version" />
+    </VersionInfoTask>
+  </Target>
+ 
+
+  <Target Name="MinimizeJS">
+
+    <ItemGroup>
+      <JavaScriptFiles Include="$(Src)\knockout.combobox.js;"/>
+      <CssFiles Include="$(Css)\knockout.combobox.css;"/>
+    </ItemGroup>
+
+    <MakeDir Directories="$(NugetFolder)\content\scripts"/>
+    <MakeDir Directories="$(NugetFolder)\content\"/>
+
+    <Copy SourceFiles="@(JavaScriptFiles)" DestinationFiles="@(JavaScriptFiles -> '$(NugetFolder)\content\scripts\$(TargetFileName)$(Version)%(Extension)')"/>
+    <Copy SourceFiles="@(CssFiles)" DestinationFiles="@(CssFiles -> '$(NugetFolder)\content\Content\$(TargetFileName)$(Version)%(Extension)')"/>
+
+    <CompressorTask
+        JavaScriptCompressionType="YuiStockCompression"
+        JavaScriptFiles="@(JavaScriptFiles)"
+        CssFiles="@(CssFiles)"
+        CssCompressionType="YuiStockCompression"
+        DeleteCssFiles="false"
+        ObfuscateJavaScript="True"
+        PreserveAllSemicolons="True"
+        DisableOptimizations="Nope"
+        EncodingType="Default"
+        DeleteJavaScriptFiles="false"
+        LineBreakPosition="-1"
+        JavaScriptOutputFile="$(NugetFolder)\content\scripts\$(TargetFileName)$(Version).min.js"
+        CssOutputFile="$(NugetFolder)\content\Content\$(TargetFileName)$(Version).min.css"
+        
+        LoggingType="ALittleBit"
+        ThreadCulture="en-US"
+        IsEvalIgnored="false" />    
+  </Target>
+
+  <Target Name="CopyFiles">
+    <ItemGroup>
+      <SpecFile Include="Package.nuspec;readme.txt">
+      </SpecFile>
+    </ItemGroup>
+    <Copy SourceFiles="@(SpecFile)" DestinationFiles="@(SpecFile -> '$(NugetFolder)\%(RecursiveDir)%(Filename)%(Extension)')"/>
+  </Target>
+
+  <Target Name="PatchNuspec">
+    <XmlPoke Condition="'$(ReleaseNotes)'!=''" XmlInputPath="$(NugetFolder)\Package.nuspec" Query="package/metadata/releaseNotes" Value="$(ReleaseNotes)" />
+  </Target>
+
+  <Target Name="Pack">
+    <Exec WorkingDirectory="$(NugetFolder)" Command="&quot;..\.build\nuget.exe&quot; pack Package.nuspec -version $(Version)"/>
+  </Target>
+
+  <Target Name="Deliver">
+    <ItemGroup>
+      <DeliverFiles Include="$(NugetFolder)\*.nupkg">
+      </DeliverFiles>
+    </ItemGroup>
+    <Copy SourceFiles="@(DeliverFiles)" DestinationFiles="@(DeliverFiles -> '$(DeliverFolder)\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <RemoveDir Directories="$(NugetFolder)" />
+  </Target>
+</Project>

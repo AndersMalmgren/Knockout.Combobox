@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Knockout.Combobox</id>
+    <version>1.0</version>
+    <authors>Anders Malmgren</authors>
+    <owners>Anders Malmgren</owners>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://github.com/AndersMalmgren/Knockout.Combobox</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>A flexible combobox for Knockout</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2014</copyright>
+    <tags>Knockout bindings  combobox dropdown select templates</tags>
+    <dependencies>
+      <dependency id="knockoutjs" version="3.0.0" />
+    </dependencies>
+  </metadata>
+</package>
