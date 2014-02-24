@@ -1,6 +1,3 @@
-body { width: 400px; margin: 0 auto; margin-top: 50px; background-color: #e4e4e4; } 
-section { margin-bottom: 20px; }
-h3 { margin-bottom: 20px; }
 .combobox { position: relative; }
 .combobox input {
 	-moz-box-sizing: border-box;
