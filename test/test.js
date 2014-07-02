@@ -133,3 +133,16 @@ asyncTest("When selected member is a non observable", function () {
     ko.applyBindings(model, view[0]);
     var input = view.find("input").val("Foo").change();
 });
+
+test("When navigating and activeindex is higher then number of items", function () {
+    var model = new ComboboxViewModel();
+    var options = defaults();
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, ko.observable());
+
+    combobox.dropdownItems([new ko.bindingHandlers.combobox.ItemViewModel({})]);
+    combobox.dropdownVisible(true);
+    combobox.currentActiveIndex = 1;
+    combobox.navigate(0);
+    
+    ok("It should navigate without exceptions")
+});

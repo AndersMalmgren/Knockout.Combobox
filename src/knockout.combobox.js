@@ -186,8 +186,10 @@
         },
         navigate: function (direction) {
             if (this.dropdownItems().length > 0 && this.dropdownVisible()) {
-                this.unnavigated(this.getCurrentActiveItem());
-                this.currentActiveIndex += direction;
+                if (direction !== 0) {
+                    this.unnavigated(this.getCurrentActiveItem());
+                    this.currentActiveIndex += direction;
+                }
                 this.currentActiveIndex = this.currentActiveIndex < 0 ? 0 : this.currentActiveIndex;
                 this.currentActiveIndex = this.currentActiveIndex >= this.paging.itemCount() ? this.paging.itemCount() - 1 : this.currentActiveIndex;
                 this.navigated(this.getCurrentActiveItem());
