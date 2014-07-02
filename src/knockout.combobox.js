@@ -58,19 +58,8 @@
         }
     };
 
-    ko.bindingHandlers.keys = {
-        init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-            var target = valueAccessor();
-            ko.utils.registerEventHandler(element, "keydown", function (e) {
-                target(e.keyCode);
-            });
-        }
-    };
-
     ko.bindingHandlers.combobox.ViewModel = function (options, viewModel, selectedObservable) {
         this.options = options;
-        this.keyPress = ko.observable().extend({ notify: "always" });
-        this.keyPress.subscribe(this.onKeyPress, this);
         this.searchText = ko.observable("");
         this.searchText.subscribe(this.onSearch, this);
         this.placeholder = options.placeholder;
@@ -99,24 +88,26 @@
     };
 
     ko.bindingHandlers.combobox.ViewModel.prototype = {
-        onKeyPress: function (keyCode) {
-            switch (keyCode) {
+        onKeyPress: function (context, e) {
+            switch (e.keyCode) {
                 case 27:
                     this.hideDropdown();
-                    break;
+                    return false;
                 case 13:
                     if (this.dropdownVisible()) {
                         this.selected(this.getCurrentActiveItem());
                     } else {
                         this.forceShow();
                     }
-                    break;
+                    return false;
                 case 38:
                     this.navigate(-1);
-                    break;
+                    return false;
                 case 40:
                     this.navigate(1);
-                    break;
+                    return false;
+                default:
+                    return true;
             }
         },
         onSearch: function (value) {
@@ -367,7 +358,7 @@
     };
 
     //Built in templates
-    var comboboxTemplate = '<div data-bind="keys: keyPress">\
+    var comboboxTemplate = '<div data-bind="event: { keydown: onKeyPress }">\
         <input data-bind="value: searchText, valueUpdate: \'afterkeydown\', hasfocus: searchHasFocus, attr: { placeholder: placeholder }"></input><button type="button" class="btn btn-arrow" data-bind="click: forceShow, css: { open: dropdownVisible }"><span class="caret"></span></button>\
         <div class="dropdown-menu" data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
             <!-- ko foreach: dropdownItems -->\
