@@ -31,7 +31,6 @@
     };
 
     ko.bindingHandlers.flexibleTemplate = {
-        engines: {},
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var options = ko.utils.unwrapObservable(valueAccessor());
             renderTemplate(element, options.template, options.data, bindingContext);
@@ -325,8 +324,8 @@
         }
     };
 
+    var engines = {};
     var renderTemplate = function (element, template, data, bindingContext) {
-        var engines = ko.bindingHandlers.flexibleTemplate.engines;
         var engine = engines[template];
 
         var success = false;
