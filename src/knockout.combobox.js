@@ -212,11 +212,10 @@
             return ko.utils.unwrapObservable(item ? item[this.options.valueMember] : null);
         },
         searchOnClientSide: function (options) {
-            var lowerCaseText = (options.text || '').toLowerCase();
-            var self = this;
+            var lowerCaseText = (options.text || "").toLowerCase();
             var filtered = ko.utils.arrayFilter(ko.utils.unwrapObservable(this.dataSource), function (item) {
-                return self.getLabel(item).toLowerCase().slice(0, lowerCaseText.length) == lowerCaseText;
-            });
+                return this.getLabel(item).toLowerCase().slice(0, lowerCaseText.length) === lowerCaseText;
+            }.bind(this));
             return {
                 total: filtered.length, //be sure of calculate length before splice
                 data: filtered.splice(options.pageSize * options.page, options.pageSize)
