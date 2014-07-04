@@ -134,7 +134,7 @@
             };
             var result = this.functionDataSource.call(this.viewModel, options);
             if (result) {
-                options.callback = noop;
+                delete options.callback;
                 if (isThenable(result)) {
                     result.then(callback);
                 } else {
@@ -303,7 +303,6 @@
         }
     };
 
-    var noop = function () { };
     var isObject = function (value) {
         return value === Object(value);
     };
