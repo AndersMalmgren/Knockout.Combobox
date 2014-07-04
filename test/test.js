@@ -146,3 +146,22 @@ test("When navigating and activeindex is higher then number of items", function 
     
     ok("It should navigate without exceptions")
 });
+
+asyncTest("When using array as datasource", function () {
+    var model = new ComboboxViewModel();
+    var options = defaults();
+    options.dataSource = [{ name: "Foo" }, { name: "Bar" }];
+    var combobox = new ko.bindingHandlers.combobox.ViewModel(options, model, ko.observable());
+
+    var orgGetData = combobox.getData;
+    combobox.getData = function() {
+        orgGetData.apply(combobox, arguments);
+
+        start();
+        equal(combobox.dropdownItems().length, 1, "It should have found one item");
+        equal(combobox.dropdownItems()[0].item.name, "Bar", "It should have found correct item");
+    };
+
+    combobox.searchText("ba");
+
+});
