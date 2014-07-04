@@ -143,10 +143,9 @@
             }
         },
         getDataCallback: function (result) {
-            var arr = [];
-            ko.utils.arrayForEach(result.data, function (item) {
-                arr.push(new ko.bindingHandlers.combobox.ItemViewModel(item));
-            } .bind(this));
+            var arr = ko.utils.arrayMap(result.data, function (item) {
+                return new ko.bindingHandlers.combobox.ItemViewModel(item);
+            });
             this.dropdownItems(arr);
             this.paging.totalCount(result.total);
             this.dropdownVisible(true);
