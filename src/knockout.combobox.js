@@ -30,7 +30,7 @@
         }
     };
 
-    ko.bindingHandlers.flexibleTemplate = {
+    ko.bindingHandlers.__cb__flexibleTemplate = {
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var options = ko.utils.unwrapObservable(valueAccessor());
             renderTemplate(element, options.template, options.data, bindingContext);
@@ -39,7 +39,7 @@
         }
     };
 
-    ko.bindingHandlers.clickedIn = {
+    ko.bindingHandlers.__cb__clickedIn = {
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var target = valueAccessor();
             var clickedIn = false;
@@ -358,9 +358,9 @@
     //Built in templates
     var comboboxTemplate = '<div data-bind="event: { keydown: onKeyPress }">\
         <input data-bind="value: searchText, valueUpdate: \'afterkeydown\', hasfocus: searchHasFocus, attr: { placeholder: placeholder }"></input><button type="button" class="btn btn-arrow" data-bind="click: forceShow, css: { open: dropdownVisible }"><span class="caret"></span></button>\
-        <div class="dropdown-menu" data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
+        <div class="dropdown-menu" data-bind="visible: dropdownVisible, __cb__clickedIn: dropdownVisible">\
             <!-- ko foreach: dropdownItems -->\
-                <div data-bind="click: $parent.selected.bind($parent), event: { mouseover: $parent.active.bind($parent), mouseout: $parent.inactive.bind($parent) }, css: { active: navigated, highlighted: active },  flexibleTemplate: { template: $parent.rowTemplate, data: $data.item }"></div>\
+                <div data-bind="click: $parent.selected.bind($parent), event: { mouseover: $parent.active.bind($parent), mouseout: $parent.inactive.bind($parent) }, css: { active: navigated, highlighted: active },  __cb__flexibleTemplate: { template: $parent.rowTemplate, data: $data.item }"></div>\
             <!-- /ko -->\
             <div class="nav" data-bind="with: paging">\
                 <p class="counter">Showing <span data-bind="text: currentFloor"></span>-<span data-bind="text: currentRoof"></span> of <span data-bind="text: totalCount"></span></p>\
