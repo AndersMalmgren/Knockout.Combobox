@@ -1,4 +1,7 @@
-.combobox { position: relative; }
+.combobox { 
+    position: relative;
+    display: inline-block;
+}
 .combobox input {
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box 
