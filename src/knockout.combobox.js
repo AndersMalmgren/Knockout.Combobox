@@ -30,8 +30,7 @@
         }
     };
 
-    ko.bindingHandlers.flexibleTemplate = {
-        engines: {},
+    ko.bindingHandlers.__cb__flexibleTemplate = {
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var options = ko.utils.unwrapObservable(valueAccessor());
             renderTemplate(element, options.template, options.data, bindingContext);
@@ -40,7 +39,7 @@
         }
     };
 
-    ko.bindingHandlers.clickedIn = {
+    ko.bindingHandlers.__cb__clickedIn = {
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var target = valueAccessor();
             var clickedIn = false;
@@ -135,7 +134,7 @@
             };
             var result = this.functionDataSource.call(this.viewModel, options);
             if (result) {
-                options.callback = noop;
+                delete options.callback;
                 if (isThenable(result)) {
                     result.then(callback);
                 } else {
@@ -144,10 +143,9 @@
             }
         },
         getDataCallback: function (result) {
-            var arr = [];
-            ko.utils.arrayForEach(result.data, function (item) {
-                arr.push(new ko.bindingHandlers.combobox.ItemViewModel(item));
-            } .bind(this));
+            var arr = ko.utils.arrayMap(result.data, function (item) {
+                return new ko.bindingHandlers.combobox.ItemViewModel(item);
+            });
             this.dropdownItems(arr);
             this.paging.totalCount(result.total);
             this.dropdownVisible(true);
@@ -214,11 +212,10 @@
             return ko.utils.unwrapObservable(item ? item[this.options.valueMember] : null);
         },
         searchOnClientSide: function (options) {
-            var lowerCaseText = (options.text || '').toLowerCase();
-            var self = this;
+            var lowerCaseText = (options.text || "").toLowerCase();
             var filtered = ko.utils.arrayFilter(ko.utils.unwrapObservable(this.dataSource), function (item) {
-                return self.getLabel(item).toLowerCase().slice(0, lowerCaseText.length) == lowerCaseText;
-            });
+                return this.getLabel(item).toLowerCase().slice(0, lowerCaseText.length) === lowerCaseText;
+            }.bind(this));
             return {
                 total: filtered.length, //be sure of calculate length before splice
                 data: filtered.splice(options.pageSize * options.page, options.pageSize)
@@ -306,7 +303,6 @@
         }
     };
 
-    var noop = function () { };
     var isObject = function (value) {
         return value === Object(value);
     };
@@ -325,8 +321,8 @@
         }
     };
 
+    var engines = {};
     var renderTemplate = function (element, template, data, bindingContext) {
-        var engines = ko.bindingHandlers.flexibleTemplate.engines;
         var engine = engines[template];
 
         var success = false;
@@ -362,9 +358,9 @@
     //Built in templates
     var comboboxTemplate = '<div data-bind="event: { keydown: onKeyPress }">\
         <input data-bind="value: searchText, valueUpdate: \'afterkeydown\', hasfocus: searchHasFocus, attr: { placeholder: placeholder }"></input><button type="button" class="btn btn-arrow" data-bind="click: forceShow, css: { open: dropdownVisible }"><span class="caret"></span></button>\
-        <div class="dropdown-menu" data-bind="visible: dropdownVisible, clickedIn: dropdownVisible">\
+        <div class="dropdown-menu" data-bind="visible: dropdownVisible, __cb__clickedIn: dropdownVisible">\
             <!-- ko foreach: dropdownItems -->\
-                <div data-bind="click: $parent.selected.bind($parent), event: { mouseover: $parent.active.bind($parent), mouseout: $parent.inactive.bind($parent) }, css: { active: navigated, highlighted: active },  flexibleTemplate: { template: $parent.rowTemplate, data: $data.item }"></div>\
+                <div data-bind="click: $parent.selected.bind($parent), event: { mouseover: $parent.active.bind($parent), mouseout: $parent.inactive.bind($parent) }, css: { active: navigated, highlighted: active },  __cb__flexibleTemplate: { template: $parent.rowTemplate, data: $data.item }"></div>\
             <!-- /ko -->\
             <div class="nav" data-bind="with: paging">\
                 <p class="counter">Showing <span data-bind="text: currentFloor"></span>-<span data-bind="text: currentRoof"></span> of <span data-bind="text: totalCount"></span></p>\
