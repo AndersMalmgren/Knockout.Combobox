@@ -29,6 +29,9 @@
             return { controlsDescendantBindings: true };
         }
     };
+    if (ko.expressionRewriting._twoWayBindings) {
+        ko.expressionRewriting._twoWayBindings.comboboxValue = true;
+    }
 
     ko.bindingHandlers.__cb__flexibleTemplate = {
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
